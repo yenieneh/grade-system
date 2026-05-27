@@ -4,26 +4,27 @@
     <meta charset="UTF-8">
     <title>የውጤት መመዝገቢያ</title>
     <style>
-        body { font-family: sans-serif; font-size: 10px; margin: 5px; }
-        /* ሰንጠረዡ እንዲሸብለል የሚያደርግ ክፍል */
-        .table-container { 
-            width: 100%; 
-            overflow-x: auto; /* አግድም ማሸብለል */
-            margin-bottom: 20px; 
-            border: 1px solid #aaa;
-        }
-        table { border-collapse: collapse; width: max-content; } /* ስፋቱ እንዲጨምር */
+        body { font-family: sans-serif; font-size: 10px; margin: 10px; }
+        .info-box { margin-bottom: 10px; font-weight: bold; }
+        .table-container { width: 100%; overflow-x: auto; margin-bottom: 20px; border: 1px solid #aaa; }
+        table { border-collapse: collapse; width: max-content; }
         th, td { border: 1px solid #000; padding: 4px; text-align: center; white-space: nowrap; }
-        input { text-align: center; border: none; width: 40px; } /* የሳጥን ስፋት */
+        input { text-align: center; border: none; width: 40px; }
         .bg-head { background: #eee; font-weight: bold; }
         .btn-print { padding: 10px; width: 100%; background: #28a745; color: white; border: none; border-radius: 5px; }
         @media print { .no-print { display: none; } }
     </style>
 </head>
 <body>
-    <h3>የውጤት መመዝገቢያ</h3>
+    <div class="info-box">
+        ዓመት: <input type="text" placeholder="2018" style="width:50px; border:1px solid #ccc;">
+        ሴሚስተር: <input type="text" placeholder="1ኛ" style="width:50px; border:1px solid #ccc;">
+        ክፍል: <input type="text" placeholder="10-A" style="width:50px; border:1px solid #ccc;">
+    </div>
+
+    <h3>1. የተማሪዎች ውጤት መመዝገቢያ</h3>
     <div class="table-container">
-        <table id="gradeTable">
+        <table>
             <tr class="bg-head">
                 <th>ተ.ቁ</th><th>ስም</th><th>ፆታ</th><th>ዕድሜ</th>
                 <th>ሙክ(5)</th><th>ክፍል(4)</th><th>ቤት(4)</th><th>ቡድን(4)</th>
@@ -31,13 +32,13 @@
                 <th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ(100%)</th>
             </tr>
             <script>
-                const maxes = [5, 4, 4, 4, 3, 5, 5, 5, 5, 20]; 
+                const maxes = [5, 4, 4, 4, 3, 5, 5, 5, 5, 20];
                 for (let i = 1; i <= 70; i++) {
                     let inputs = maxes.map((m) => `<td><input type="number" class="asm-${i}" oninput="validate(this, ${m}); calc(${i})"></td>`).join('');
                     document.write(`
                         <tr id="row-${i}">
                             <td>${i}</td>
-                            <td><input type="text" class="sname-${i}" oninput="calc(${i})" style="width:100px;"></td>
+                            <td><input type="text" class="sname-${i}" oninput="calc(${i})" style="width:80px;"></td>
                             <td><input type="text" style="width:20px;"></td>
                             <td><input type="number" style="width:20px;"></td>
                             ${inputs}
@@ -51,7 +52,22 @@
         </table>
     </div>
 
-    <button class="btn-print no-print" onclick="window.print()">ሪፖርት አትም (PDF)</button>
+    <h3>2. ሪፖርት ማድረጊያ</h3>
+    <div class="table-container">
+        <table>
+            <tr class="bg-head"><th>ተ.ቁ</th><th>ስም</th><th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ(100%)</th></tr>
+            <script>
+                for (let i = 1; i <= 70; i++) {
+                    document.write(`<tr>
+                        <td>${i}</td><td id="r-name-${i}">-</td>
+                        <td id="r-sum60-${i}">0</td><td id="r-exam-${i}">0</td><td id="r-total-${i}">0</td>
+                    </tr>`);
+                }
+            </script>
+        </table>
+    </div>
+
+    <button class="btn-print no-print" onclick="window.print()">ሪፖርት አትም / PDF አድርግ</button>
 
     <script>
         function validate(el, max) { if (parseFloat(el.value) > max) el.value = max; if (el.value < 0) el.value = 0; }
@@ -63,6 +79,11 @@
             let examVal = parseFloat(row.querySelector(`.exam-${i}`).value) || 0;
             row.querySelector(`.sum60-${i}`).value = sum60;
             row.querySelector(`.total100-${i}`).value = sum60 + examVal;
+            
+            document.getElementById(`r-name-${i}`).innerText = row.querySelector(`.sname-${i}`).value || "-";
+            document.getElementById(`r-sum60-${i}`).innerText = sum60;
+            document.getElementById(`r-exam-${i}`).innerText = examVal;
+            document.getElementById(`r-total-${i}`).innerText = sum60 + examVal;
         }
     </script>
 </body>
