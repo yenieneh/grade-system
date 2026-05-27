@@ -2,12 +2,12 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <title>የውጤት መመዝገቢያ ስርዓት</title>
+    <title>የውጤት መመዝገቢያ</title>
     <style>
         @page { size: A4 portrait; margin: 5mm; }
         body { font-family: sans-serif; font-size: 10px; margin: 0; padding: 5px; }
         .table-container { overflow-x: auto; margin-bottom: 20px; border: 1px solid #aaa; }
-        table { border-collapse: collapse; width: 100%; background: #fff; }
+        table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #000; padding: 2px; text-align: center; }
         input { text-align: center; border: none; width: 100%; }
         .bg-head { background: #eee; font-weight: bold; }
@@ -26,10 +26,9 @@
                 <th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ(100%)</th>
             </tr>
             <script>
-                // 9 የአካል ብቃት/ውስጥ ውጤቶች (5+4+4+4+3+5+5+5+5 = 40 እና ሌሎች 20 = 60)
                 const maxes = [5, 4, 4, 4, 3, 5, 5, 5, 5]; 
                 for (let i = 1; i <= 70; i++) {
-                    let inputs = maxes.map((m) => `<td><input type="number" class="asm-${i}" style="width:20px;" oninput="calc(${i})"></td>`).join('');
+                    let inputs = maxes.map((m) => `<td><input type="number" class="asm-${i}" style="width:20px;" oninput="validate(this, ${m}); calc(${i})"></td>`).join('');
                     document.write(`
                         <tr id="row-${i}">
                             <td>${i}</td>
@@ -38,7 +37,7 @@
                             <td><input type="number" style="width:20px;"></td>
                             ${inputs}
                             <td><input type="number" class="sum60-${i}" readonly style="width:30px;"></td>
-                            <td><input type="number" class="exam-${i}" style="width:30px;" oninput="calc(${i})"></td>
+                            <td><input type="number" class="exam-${i}" style="width:30px;" oninput="validate(this, 40); calc(${i})"></td>
                             <td><input type="number" class="total100-${i}" readonly style="width:35px;"></td>
                         </tr>
                     `);
@@ -47,7 +46,7 @@
         </table>
     </div>
 
-    <h3>የሪፖርት ሰንጠረዥ</h3>
+    <h3>ሪፖርት</h3>
     <div class="table-container">
         <table id="reportTable">
             <tr class="bg-head"><th>ተ.ቁ</th><th>ስም</th><th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ(100%)</th></tr>
@@ -64,16 +63,15 @@
     <button class="btn-print no-print" onclick="window.print()">ይህንን ሪፖርት አትም / PDF አድርግ</button>
 
     <script>
+        function validate(el, max) { if (parseFloat(el.value) > max) el.value = max; if (el.value < 0) el.value = 0; }
         function calc(i) {
             let row = document.getElementById(`row-${i}`);
             let asms = row.querySelectorAll(`.asm-${i}`);
             let sum60 = 0;
             asms.forEach(inp => { sum60 += parseFloat(inp.value) || 0; });
             let examVal = parseFloat(row.querySelector(`.exam-${i}`).value) || 0;
-            
             row.querySelector(`.sum60-${i}`).value = sum60;
             row.querySelector(`.total100-${i}`).value = sum60 + examVal;
-            
             document.getElementById(`r-name-${i}`).innerText = row.querySelector(`.sname-${i}`).value || "-";
             document.getElementById(`r-sum60-${i}`).innerText = sum60;
             document.getElementById(`r-exam-${i}`).innerText = examVal;
