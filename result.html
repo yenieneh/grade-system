@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <title>የውጤት መመዝገቢያ</title>
+    <style>
+        body { font-family: sans-serif; font-size: 11px; padding: 5px; }
+        .table-container { overflow-x: auto; margin-bottom: 20px; border: 1px solid #aaa; }
+        table { border-collapse: collapse; width: 100%; min-width: 800px; background: #fff; }
+        th, td { border: 1px solid #000; padding: 3px; text-align: center; }
+        input { text-align: center; border: 1px solid #ccc; }
+        .bg-head { background: #eee; font-weight: bold; }
+        .btn-print { padding: 12px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; margin-bottom: 30px; }
+        
+        /* ማተሚያ ስታይል: ማተም ሲባል ምን እንዲታይ */
+        @media print {
+            .no-print { display: none; }
+            body { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <h3>1. የተማሪዎች ውጤት መመዝገቢያ</h3>
+    <div class="table-container">
+        <table id="gradeTable">
+            <tr class="bg-head">
+                <th>ተ.ቁ</th><th>ስም (ከአያት)</th><th>ፆታ</th><th>እድሜ</th><th>ሙክ(5)</th><th>ክፍል(4)</th><th>ቤት(4)</th><th>ቡድን(4)</th>
+                <th>ተሳት(3)</th><th>ተግባር(5)</th><th>የተሰጠ(5)</th><th>ፕሮጅ(5)</th><th>መስክ(5)</th>
+                <th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ(100%)</th>
+            </tr>
+            <script>
+                const maxes = [5, 4, 4, 4, 3, 5, 5, 5, 5];
+                for (let i = 1; i <= 70; i++) {
+                    let inputs = maxes.map((m, idx) => `<td><input type="number" class="asm asm-${i}" data-max="${m}" style="width:25px;" oninput="validate(this, ${m}); calc(${i})"></td>`).join('');
+                    document.write(`
+                        <tr id="row-${i}">
+                            <td>${i}</td>
+                            <td><input type="text" class="sname-${i}" style="width:100px;"></td>
+                            <td><input type="text" style="width:20px;"></td>
+                            <td><input type="number" style="width:25px;"></td>
+                            ${inputs}
+                            <td><input type="number" class="sum60-${i}" style="width:30px;" readonly></td>
+                            <td><input type="number" class="exam-${i}" style="width:30px;" oninput="validate(this, 40); calc(${i})"></td>
+                            <td><input type="number" class="total100-${i}" style="width:35px;" readonly></td>
+                        </tr>
+                    `);
+                }
+            </script>
+        </table>
+    </div>
+
+    <h3>2. ሪፖርት ማድረጊያ (የተጠቃለለ)</h3>
+    <div class="table-container" style="max-width: 600px;">
+        <table id="reportTable">
+            <tr class="bg-head">
+                <th>ተ.ቁ</th><th>ስም (ከአያት)</th><th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ(100%)</th>
+            </tr>
+            <script>
+                for (let i = 1; i <= 70; i++) {
+                    document.write(`<tr>
+                        <td>${i}</td><td id="r-name-${i}">-</td>
+                        <td id="r-sum60-${i}">0</td><td id="r-exam-${i}">0</td><td id="r-total-${i}">0</td>
+                    </tr>`);
+                }
+            </script>
+        </table>
+    </div>
+    
+    <button class="btn-print no-print" onclick="window.print()">ይህንን ሪፖርት አትም / PDF አድርግ</button>
+
+    <script>
+        function validate(el, max) {
+            if (parseFloat(el.value) > max) el.value = max;
+        }
+
+        function calc(i) {
+            let row = document.getElementById(`row-${i}`);
+            let asms = row.querySelectorAll(`.asm-${i}`);
+            let sum60 = 0;
+            asms.forEach(inp => { sum60 += parseFloat(inp.value) || 0; });
+            let examVal = parseFloat(row.querySelector(`.exam-${i}`).value) || 0;
+            
+            row.querySelector(`.sum60-${i}`).value = sum60;
+            row.querySelector(`.total100-${i}`).value = sum60 + examVal;
+            updateReport();
+        }
+
+        function updateReport() {
+            for (let i = 1; i <= 70; i++) {
+                let row = document.getElementById(`row-${i}`);
+                document.getElementById(`r-name-${i}`).innerText = row.querySelector(`.sname-${i}`).value || "-";
+                document.getElementById(`r-sum60-${i}`).innerText = row.querySelector(`.sum60-${i}`).value || "0";
+                document.getElementById(`r-exam-${i}`).innerText = row.querySelector(`.exam-${i}`).value || "0";
+                document.getElementById(`r-total-${i}`).innerText = row.querySelector(`.total100-${i}`).value || "0";
+            }
+        }
+    </script>
+</body>
+</html>
