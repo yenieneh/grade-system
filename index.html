@@ -2,7 +2,7 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <title>የውጤት መመዝገቢያ - 100%</title>
+    <title>የውጤት መመዝገቢያ</title>
     <style>
         @page { size: A4 portrait; margin: 10mm; }
         body { font-family: sans-serif; font-size: 10px; margin: 0; padding: 5px; }
@@ -20,25 +20,41 @@
     <div class="table-container">
         <table id="gradeTable">
             <tr class="bg-head">
-                <th>ተ.ቁ</th><th>ስም</th><th>ሙክ(5)</th><th>ክፍል(4)</th><th>ቤት(4)</th><th>ቡድን(4)</th>
+                <th>ተ.ቁ</th><th>ስም</th><th>ፆታ</th><th>እድሜ</th><th>ሙክ(5)</th><th>ክፍል(4)</th><th>ቤት(4)</th><th>ቡድን(4)</th>
                 <th>ተሳት(3)</th><th>ተግባር(5)</th><th>የተሰጠ(5)</th><th>ፕሮጅ(5)</th><th>መስክ(5)</th>
                 <th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ(100%)</th>
             </tr>
             <script>
-                // የ 60% ውጤት ማስያ
                 const maxes = [5, 4, 4, 4, 3, 5, 5, 5, 5];
                 for (let i = 1; i <= 70; i++) {
                     let inputs = maxes.map((m) => `<td><input type="number" class="asm-${i}" style="width:20px;" oninput="calc(${i})"></td>`).join('');
                     document.write(`
                         <tr id="row-${i}">
                             <td>${i}</td>
-                            <td><input type="text" style="width:80px;"></td>
+                            <td><input type="text" class="sname-${i}" style="width:80px;" oninput="calc(${i})"></td>
+                            <td><input type="text" style="width:20px;"></td>
+                            <td><input type="number" style="width:25px;"></td>
                             ${inputs}
                             <td><input type="number" class="sum60-${i}" readonly style="width:35px;"></td>
                             <td><input type="number" class="exam-${i}" style="width:35px;" oninput="calc(${i})"></td>
                             <td><input type="number" class="total100-${i}" readonly style="width:40px;"></td>
                         </tr>
                     `);
+                }
+            </script>
+        </table>
+    </div>
+
+    <h3>ሪፖርት ማድረጊያ</h3>
+    <div class="table-container" style="max-width:800px;">
+        <table id="reportTable">
+            <tr class="bg-head"><th>ተ.ቁ</th><th>ስም</th><th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ</th></tr>
+            <script>
+                for (let i = 1; i <= 70; i++) {
+                    document.write(`<tr>
+                        <td>${i}</td><td id="r-name-${i}">-</td>
+                        <td id="r-sum60-${i}">0</td><td id="r-exam-${i}">0</td><td id="r-total-${i}">0</td>
+                    </tr>`);
                 }
             </script>
         </table>
@@ -53,11 +69,14 @@
             let sum60 = 0;
             asms.forEach(inp => { sum60 += parseFloat(inp.value) || 0; });
             let examVal = parseFloat(row.querySelector(`.exam-${i}`).value) || 0;
-            
-            // 60% ላይ መገደብ
             if (sum60 > 60) sum60 = 60;
             row.querySelector(`.sum60-${i}`).value = sum60;
             row.querySelector(`.total100-${i}`).value = sum60 + examVal;
+            
+            document.getElementById(`r-name-${i}`).innerText = row.querySelector(`.sname-${i}`).value || "-";
+            document.getElementById(`r-sum60-${i}`).innerText = sum60;
+            document.getElementById(`r-exam-${i}`).innerText = examVal;
+            document.getElementById(`r-total-${i}`).innerText = sum60 + examVal;
         }
     </script>
 </body>
