@@ -2,7 +2,7 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <title>የውጤት መመዝገቢያ</title>
+    <title>የውጤት መመዝገቢያ - 100%</title>
     <style>
         @page { size: A4 portrait; margin: 5mm; }
         body { font-family: sans-serif; font-size: 10px; margin: 0; padding: 5px; }
@@ -22,11 +22,12 @@
             <tr class="bg-head">
                 <th>ተ.ቁ</th><th>ስም</th><th>ፆታ</th><th>ዕድሜ</th>
                 <th>ሙክ(5)</th><th>ክፍል(4)</th><th>ቤት(4)</th><th>ቡድን(4)</th>
-                <th>ተሳት(3)</th><th>ተግባር(5)</th><th>የተሰጠ(5)</th><th>ፕሮጅ(5)</th><th>መስክ(5)</th>
+                <th>ተሳት(3)</th><th>ተግባር(5)</th><th>የተሰጠ(5)</th><th>ፕሮጅ(5)</th><th>መስክ(5)</th><th>ተጨማሪ(20)</th>
                 <th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ(100%)</th>
             </tr>
             <script>
-                const maxes = [5, 4, 4, 4, 3, 5, 5, 5, 5]; 
+                // አሁን 10 አምዶች አሉ (9ቱ ቀድሞ የነበሩ + አዲሱ 20%)
+                const maxes = [5, 4, 4, 4, 3, 5, 5, 5, 5, 20]; 
                 for (let i = 1; i <= 70; i++) {
                     let inputs = maxes.map((m) => `<td><input type="number" class="asm-${i}" style="width:20px;" oninput="validate(this, ${m}); calc(${i})"></td>`).join('');
                     document.write(`
@@ -46,20 +47,6 @@
         </table>
     </div>
 
-    <h3>ሪፖርት</h3>
-    <div class="table-container">
-        <table id="reportTable">
-            <tr class="bg-head"><th>ተ.ቁ</th><th>ስም</th><th>ድምር(60%)</th><th>ፈተና(40%)</th><th>ጠቅላላ(100%)</th></tr>
-            <script>
-                for (let i = 1; i <= 70; i++) {
-                    document.write(`<tr>
-                        <td>${i}</td><td id="r-name-${i}">-</td>
-                        <td id="r-sum60-${i}">0</td><td id="r-exam-${i}">0</td><td id="r-total-${i}">0</td>
-                    </tr>`);
-                }
-            </script>
-        </table>
-    </div>
     <button class="btn-print no-print" onclick="window.print()">ይህንን ሪፖርት አትም / PDF አድርግ</button>
 
     <script>
@@ -70,12 +57,9 @@
             let sum60 = 0;
             asms.forEach(inp => { sum60 += parseFloat(inp.value) || 0; });
             let examVal = parseFloat(row.querySelector(`.exam-${i}`).value) || 0;
+            
             row.querySelector(`.sum60-${i}`).value = sum60;
             row.querySelector(`.total100-${i}`).value = sum60 + examVal;
-            document.getElementById(`r-name-${i}`).innerText = row.querySelector(`.sname-${i}`).value || "-";
-            document.getElementById(`r-sum60-${i}`).innerText = sum60;
-            document.getElementById(`r-exam-${i}`).innerText = examVal;
-            document.getElementById(`r-total-${i}`).innerText = sum60 + examVal;
         }
     </script>
 </body>
